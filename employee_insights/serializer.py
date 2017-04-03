@@ -83,8 +83,9 @@ class CsvSerializer(object):
             writer.writerow(employee)
 
     def _csv_record_factory(self, employee, timestamp):
+        result = []
         with contextlib.suppress(Exception):
-            return [
+            result = [
                 employee.employee_id,
                 employee.job_title.job_title,
                 employee.location.continent,
@@ -96,7 +97,7 @@ class CsvSerializer(object):
                 employee.last_name,
                 employee.company.company_name,
             ]
-        return []
+        return result
 
     def _factory(self, cls, csv_record, key=None, **extra_fields):
 

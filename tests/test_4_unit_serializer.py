@@ -2,18 +2,19 @@
 import io
 import datetime
 # 3rd party
-from hypothesis import strategies as st, given
+from hypothesis import given, settings
 import hypothesis.extra.datetime as st_dt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 # local
 from employee_insights.models import Base
-from employee_insights.csvimport import CsvSerializer
+from employee_insights.serializer import CsvSerializer
 from test_strategies import employee_databases
 
 
-@given(employee_databases(), st_dt.datetimes(min_year=datetime.date.today().year))
-def test_csvimport(employee_database, timestamp):
+@settings(max_examples=50)
+@given(employee_databases(min_employees=0), st_dt.datetimes(min_year=datetime.date.today().year))
+def test_serializer(employee_database, timestamp):
 
     employee_data, session = employee_database
 
@@ -35,6 +36,4 @@ def test_csvimport(employee_database, timestamp):
 
     assert dump1
     assert dump2
-    if dump1 != dump2:
-        assert 0
     assert dump1 == dump2

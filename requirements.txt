@@ -1,4 +1,7 @@
 flask
+flask-bootstrap
+flask-nav
 sqlalchemy
 sqlalchemy-repr
 attrs
+frozendict

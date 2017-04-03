@@ -4,7 +4,7 @@ import itertools
 from functools import partial
 # 3rd party
 import pytest
-from hypothesis import strategies as st, given
+from hypothesis import strategies as st, given, settings
 from neobunch import NeoBunch as Bunch
 from toolz.itertoolz import count
 # local
@@ -83,6 +83,7 @@ def get_expected(employee_data, continent, country, state, city, min_percentage)
             yield company.company_id, location, percentage
 
 
+@settings(max_examples=50)
 @given(employee_databases(), st.data(), st.integers(min_value=0, max_value=100))
 def test_get_employees_percentage_by_location(employee_database, data, min_percentage):
     """

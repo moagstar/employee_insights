@@ -1,4 +1,3 @@
-
 def get_company_employees(employee_data):
     """
     Returns a generator that when yielded groups employees by company.

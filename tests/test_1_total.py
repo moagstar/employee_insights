@@ -2,7 +2,7 @@
 import datetime
 import itertools
 # 3rd party
-from hypothesis import given
+from hypothesis import given, settings
 # local
 from employee_insights.queries import get_employees_per_company
 from test_strategies import employee_databases
@@ -25,6 +25,7 @@ def get_expected(employee_data):
         yield company.company_id, len(company_employees)
 
 
+@settings(max_examples=50)
 @given(employee_databases())
 def test_get_employees_per_company(employee_database):
     """

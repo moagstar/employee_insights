@@ -6,7 +6,7 @@ import itertools
 from toolz.itertoolz import count
 # 3rd party
 import pytest
-from hypothesis import strategies as st, given
+from hypothesis import strategies as st, given, settings
 # local
 from employee_insights.queries import get_employees_percentage_older_than_average
 from test_strategies import employee_databases
@@ -52,6 +52,7 @@ def get_expected(employee_data, n_years):
         yield company.company_id, percentage_older
 
 
+@settings(max_examples=50)
 @given(employee_databases(), st.integers(min_value=0, max_value=10))
 def test_get_employees_percentage_older_than_average(employee_database, n_years):
     """

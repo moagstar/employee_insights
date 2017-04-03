@@ -4,7 +4,7 @@ import collections
 import itertools
 # 3rd party
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 # local
 from employee_insights.queries import get_employees_percentage_per_job_title
 from test_strategies import employee_databases
@@ -32,6 +32,7 @@ def get_expected(employee_data):
             yield company.company_id, job_title_id, percentage
 
 
+@settings(max_examples=50)
 @given(employee_databases())
 def test_get_employees_percentage_per_job_title(employee_database):
     """
