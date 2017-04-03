@@ -1,0 +1,27 @@
+{% macro styles() %}
+<link rel="stylesheet" href="static/vendor/dropzone/basic.css"/>
+<link rel="stylesheet" href="static/vendor/simple-data-grid/simple.datagrid.css"/>
+{% endmacro %}
+
+{% macro scripts() %}
+<script src="static/vendor/simple-data-grid/simple.datagrid.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#results').simple_datagrid();
+    });
+</script>
+{% endmacro %}
+
+{% macro table(fields) %}
+    <div class="container-fluid">
+        <table id="results" style="width:100%">
+            <thead>
+                <tr>
+                    {% for field in fields %}
+                    <th>{{ field }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+        </table>
+    </div>
+{% endmacro %}

@@ -1,0 +1,55 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'forms/result_table.html' as result_table %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="static/vendor/dropzone/dropzone.min.css"/>
+<link rel="stylesheet" href="static/vendor/dropzone/basic.css"/>
+{{ result_table.styles() }}
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="static/vendor/dropzone/dropzone.min.js"></script>
+{{ result_table.scripts() }}
+<script>
+    function loadEmployees() {
+        $.get('/api/employees', function (data) {
+            $('#results').simple_datagrid('loadData', data);
+        });
+    }
+    $(document).ready(function () {
+        loadEmployees();
+        Dropzone.options.importEmployeesCsv = {
+            success: function (file, response) {
+                loadEmployees();
+            }
+        };
+    });
+</script>
+{% endblock %}
+
+{% block navbar %}
+{{nav.mynavbar.render()}}
+{% endblock %}
+
+{% block content %}
+<form action="/api/employees"
+      class="dropzone"
+      id="import-employees-csv"></form>
+{{
+    result_table.table([
+        "employee_id",
+        "job_title",
+        "continent",
+        "country",
+        "state",
+        "city",
+        "age",
+        "first_name",
+        "last_name",
+        "company_name",
+    ])
+}}
+{% endblock %}

@@ -1,16 +1,23 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}
+{% import 'forms/result_table.html' as result_table %}
 
+{% block styles %}
+{{super()}}
+{{ result_table.styles() }}
 {% endblock %}
 
+{% block scripts %}
+{{super()}}
+{{ result_table.scripts() }}
+{% endblock %}
 
 {% block navbar %}
     {{ nav.mynavbar.render() }}
 {% endblock %}
 
 {% block content %}
-    <div class="dropdown">
+    <div class="dropdown col-lg-2">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
             Location
@@ -25,24 +32,15 @@
         </ul>
     </div>
 
+    <div class="col-lg-2">
+        <div class="input-group">
+            <input type="number" min="0" class="form-control" placeholder="percentage threshold" id="percentage">
+            <span class="input-group-btn">
+        <button class="btn btn-default" type="button">Go!</button>
+      </span>
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
 
-    <div class="row">
-        <div class="col-lg-2">
-            <div class="input-group">
-                <input type="number" min="0" class="form-control" placeholder="percentage threshold" id="percentage">
-                <span class="input-group-btn">
-            <button class="btn btn-default" type="button">Go!</button>
-          </span>
-            </div><!-- /input-group -->
-        </div><!-- /.col-lg-6 -->
-    </div><!-- /.row -->
-
-    <table class="table">
-        <tr>
-            <th>Column1</th>
-            <th>Column2</th>
-            <th>Column3</th>
-        </tr>
-    </table>
+    {{ result_table.table(["company_name", "location_name", "percentage"]) }}
 
 {% endblock %}

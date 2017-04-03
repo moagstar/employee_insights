@@ -35,46 +35,6 @@ class Location(Base):
     employees = relationship('Employee', back_populates='location')
 
 
-class Continent(Base):
-
-    __tablename__ = 'continent'
-    __table_args__ = {'sqlite_autoincrement': True}
-
-    continent_id = Column(Integer, primary_key=True, autoincrement=True)
-
-    continent = Column(String)
-
-
-class Country(Base):
-
-    __tablename__ = 'country'
-    __table_args__ = {'sqlite_autoincrement': True}
-
-    country_id = Column(Integer, primary_key=True, autoincrement=True)
-
-    country = Column(String)
-
-
-class State(Base):
-
-    __tablename__ = 'state'
-    __table_args__ = {'sqlite_autoincrement': True}
-
-    state_id = Column(Integer, primary_key=True, autoincrement=True)
-
-    state = Column(String)
-
-
-class City(Base):
-
-    __tablename__ = 'city'
-    __table_args__ = {'sqlite_autoincrement': True}
-
-    city_id = Column(Integer, primary_key=True, autoincrement=True)
-
-    city = Column(String)
-
-
 class JobTitle(Base):
 
     __tablename__ = 'job_title'

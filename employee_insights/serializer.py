@@ -3,10 +3,9 @@ import csv
 import collections
 import datetime
 import frozendict
+import contextlib
 from functools import partial
 # 3rd party
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import attr
 # local
 from employee_insights.models import *
@@ -55,13 +54,16 @@ class CsvSerializer(object):
 
             csv_record = CsvRecord(*record, timestamp=timestamp)
 
-            job_title, job_title_id = self._factory(JobTitle, csv_record)
-            company, company_id = self._factory(Company, csv_record)
-            location, location_id = self._factory(Location, csv_record)
+            job_title_id = self._factory(JobTitle, csv_record)
+            company_id = self._factory(Company, csv_record)
+            location_id = self._factory(Location, csv_record)
 
-            extra_fields = dict(location_id=location_id, company_id=company_id,
-                                job_title_id=job_title_id, date_of_birth=csv_record.date_of_birth)
-            employee = self._factory(Employee, csv_record, lambda x: x.record_id, **extra_fields)
+            extra_fields = dict(
+                location_id=location_id,
+                company_id=company_id,
+                job_title_id=job_title_id,
+                date_of_birth=csv_record.date_of_birth)
+            self._factory(Employee, csv_record, lambda x: x.record_id, **extra_fields)
 
         for cls_store in self.store.values():
             self.session.add_all(x for x, _ in cls_store.values())
@@ -81,18 +83,20 @@ class CsvSerializer(object):
             writer.writerow(employee)
 
     def _csv_record_factory(self, employee, timestamp):
-        return [
-            employee.employee_id,
-            employee.job_title.job_title,
-            employee.location.continent,
-            employee.location.country,
-            employee.location.state,
-            employee.location.city,
-            (timestamp.date() - employee.date_of_birth).days / 365.25,
-            employee.first_name,
-            employee.last_name,
-            employee.company.company_name,
-        ]
+        with contextlib.suppress(Exception):
+            return [
+                employee.employee_id,
+                employee.job_title.job_title,
+                employee.location.continent,
+                employee.location.country,
+                employee.location.state,
+                employee.location.city,
+                (timestamp.date() - employee.date_of_birth).days / 365.25,
+                employee.first_name,
+                employee.last_name,
+                employee.company.company_name,
+            ]
+        return []
 
     def _factory(self, cls, csv_record, key=None, **extra_fields):
 
@@ -112,20 +116,5 @@ class CsvSerializer(object):
             item = cls(**fields)
             cls_store[store_key] = item, len(cls_store) + 1
 
-        return cls_store[store_key]
-
-
-if __name__ == '__main__':
-
-    engine = create_engine('sqlite:///:memory:')
-    Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    with open('test_data/DataSet_0.csv', encoding='utf-8') as fileobj:
-        serializer = CsvSerializer(session)
-        serializer.load(fileobj)
-
-    with open('test_data/DataSet_1.csv', 'w', encoding='utf-8') as fileobj:
-        serializer = CsvSerializer(session)
-        serializer.dump(fileobj)
+        _, id = cls_store[store_key]
+        return id
