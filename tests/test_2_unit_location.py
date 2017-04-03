@@ -8,7 +8,7 @@ from hypothesis import strategies as st, given
 from neobunch import NeoBunch as Bunch
 from toolz.itertoolz import count
 # local
-from queries import get_employees_percentage_by_location
+from employee_insights.queries import get_employees_percentage_by_location
 from test_strategies import employee_databases
 from test_common import get_company_employees
 

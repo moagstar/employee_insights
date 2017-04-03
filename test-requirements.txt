@@ -1,0 +1,8 @@
+faker
+inflect
+stringcase
+neobunch
+toolz
+pytest
+hypothesis
+pytz

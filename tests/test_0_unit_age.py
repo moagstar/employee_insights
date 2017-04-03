@@ -8,7 +8,7 @@ from toolz.itertoolz import count
 import pytest
 from hypothesis import strategies as st, given
 # local
-from queries import get_employees_percentage_older_than_average
+from employee_insights.queries import get_employees_percentage_older_than_average
 from test_strategies import employee_databases
 from test_common import get_company_employees
 
@@ -66,7 +66,7 @@ def test_get_employees_percentage_older_than_average(employee_database, n_years)
     :param n_years: Find percentage of employees this number of years older
                     than the company-wide average.
     """
-    with mock.patch('models.NOW', '2017-04-01'):
+    with mock.patch('employee_insights.models.NOW', '2017-04-01'):
 
         employee_data, session = employee_database
 

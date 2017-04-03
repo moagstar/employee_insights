@@ -1,0 +1,33 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+
+{% block navbar %}
+    {{ nav.mynavbar.render() }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="input-group">
+                <input type="number" min="0" class="form-control" placeholder="years" id="years">
+                <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Go!</button>
+          </span>
+            </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <tr>
+            <th>Column1</th>
+            <th>Column2</th>
+            <th>Column3</th>
+        </tr>
+    </table>
+
+{% endblock %}

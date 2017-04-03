@@ -4,7 +4,7 @@ import itertools
 # 3rd party
 from hypothesis import given
 # local
-from queries import get_employees_per_company
+from employee_insights.queries import get_employees_per_company
 from test_strategies import employee_databases
 from test_common import get_company_employees
 

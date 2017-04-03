@@ -1,7 +1,7 @@
 # 3rd party
 from sqlalchemy import func, case
 # local
-from models import Employee, Company, Location, JobTitle
+from employee_insights.models import Employee, Company, Location, JobTitle
 
 
 def get_company_statistics(session):

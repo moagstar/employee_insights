@@ -17,10 +17,7 @@ inflect = inflect.engine()
 import stringcase
 from neobunch import NeoBunch as Bunch
 # local
-from models import *
-
-
-fake_object_pools = {}
+from employee_insights.models import *
 
 
 non_empty_lists = partial(st.lists, min_size=1)
@@ -33,28 +30,20 @@ MAX_COMPANIES = 15
 MAX_EMPLOYEES = 20
 
 
-def _init_fake_object_pools():
-    """
-    Initialise the pool of fake objects for sampling from to generate hypothesis
-    examples.
-    """
-    global fake_object_pools
-    if not fake_object_pools:
+# use faker to create some fake object pools, any data would probably do
+# here, however for debugging it's nice if these fields contain something
+# that looks like real data.
+fake_object_pools = {
+    x: [{x: getattr(faker, x)()} for _ in range(POOL_SIZE)]
+    for x in ('job_title', 'company_name', 'first_name', 'last_name')
+}
 
-        # use faker to create some fake object pools, any data would probably do
-        # here, however for debugging it's nice if these fields contain something
-        # that looks like real data.
-        fake_object_pools = {
-            x: [{x: getattr(faker, x)()} for _ in range(POOL_SIZE)]
-            for x in ('job_title', 'company_name', 'first_name', 'last_name')
-        }
-
-        # for most test data the Faker module can be used, however there are not
-        # really any nice fake locations in this package, so load these from a
-        # pre-generated file.
-        __dir__ = os.path.dirname(__file__)
-        with open(os.path.join(__dir__, 'test_data/locations.csv')) as f:
-            fake_object_pools['location'] = list(csv.DictReader(f, delimiter=','))
+# for most test data the Faker module can be used, however there are not
+# really any nice fake locations in this package, so load these from a
+# pre-generated file.
+__dir__ = os.path.dirname(__file__)
+with open(os.path.join(__dir__, 'data/locations.csv'), encoding='utf-8') as f:
+    fake_object_pools['location'] = list(csv.DictReader(f, delimiter=','))
 
 
 min_age, max_age = 16, 100
@@ -168,8 +157,6 @@ def employee_data(draw, min_employees=1, max_employees=MAX_EMPLOYEES,
 
     :return:
     """
-    _init_fake_object_pools()
-
     locations = draw_items_from_pool(draw, 'location',
                                      min_size=min_locations, max_size=max_locations)
     job_titles = draw_items_from_pool(draw, 'job_title',

@@ -1,0 +1,4 @@
+flask
+sqlalchemy
+sqlalchemy-repr
+attrs

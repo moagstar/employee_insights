@@ -6,7 +6,7 @@ import itertools
 import pytest
 from hypothesis import given
 # local
-from queries import get_employees_percentage_per_job_title
+from employee_insights.queries import get_employees_percentage_per_job_title
 from test_strategies import employee_databases
 from test_common import get_company_employees
 

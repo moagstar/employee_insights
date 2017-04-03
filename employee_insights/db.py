@@ -4,7 +4,7 @@ import datetime
 from sqlalchemy import create_engine, func, case
 from sqlalchemy.orm import sessionmaker
 # local
-from models import *
+from employee_insights.models import *
 
 
 def create_database(create_all=False):
