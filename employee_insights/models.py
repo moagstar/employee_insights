@@ -14,9 +14,7 @@ class Company(Base):
     __table_args__ = {'sqlite_autoincrement': True}
 
     company_id = Column(Integer, primary_key=True, autoincrement=True)
-
     company_name = Column(String)
-
     employees = relationship('Employee', back_populates='company')
 
 
@@ -26,13 +24,24 @@ class Location(Base):
     __table_args__ = {'sqlite_autoincrement': True}
 
     location_id = Column(Integer, primary_key=True, autoincrement=True)
-
     continent = Column(String)
     country = Column(String)
     state = Column(String)
     city = Column(String)
-
     employees = relationship('Employee', back_populates='location')
+
+    @hybrid_property
+    def country_description(self):
+        return self.continent + "/" + self.country
+
+    @hybrid_property
+    def state_description(self):
+        return self.continent + "/" + self.country + "/" + self.state
+
+    @hybrid_property
+    def city_description(self):
+        return func.rtrim(self.continent + "/" + self.country + "/" +
+                          self.state + "/" + self.city, '/')
 
 
 class JobTitle(Base):
@@ -41,9 +50,7 @@ class JobTitle(Base):
     __table_args__ = {'sqlite_autoincrement': True}
 
     job_title_id = Column(Integer, primary_key=True, autoincrement=True)
-
     job_title = Column(String)
-
     employees = relationship('Employee', back_populates='job_title')
 
 
@@ -56,14 +63,9 @@ class Employee(Base):
     __table_args__ = {'sqlite_autoincrement': True}
 
     employee_id = Column(Integer, primary_key=True, autoincrement=True)
-
     first_name = Column(String)
     last_name = Column(String)
     date_of_birth = Column(Date)
-
-    @hybrid_property
-    def age(self):
-        return (func.julianday(NOW) - func.julianday(self.date_of_birth)) / 365.25
 
     company_id = Column(Integer, ForeignKey('company.company_id'))
     company = relationship('Company', back_populates='employees')
@@ -73,3 +75,7 @@ class Employee(Base):
 
     location_id = Column(Integer, ForeignKey('location.location_id'))
     location = relationship('Location', back_populates='employees')
+
+    @hybrid_property
+    def age(self):
+        return (func.julianday(NOW) - func.julianday(self.date_of_birth)) / 365.25

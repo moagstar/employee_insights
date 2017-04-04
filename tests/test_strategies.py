@@ -2,6 +2,7 @@
 from functools import partial
 import datetime
 import os
+import io
 import csv
 # 3rd party
 from sqlalchemy import create_engine
@@ -16,8 +17,29 @@ import inflect
 inflect = inflect.engine()
 import stringcase
 from neobunch import NeoBunch as Bunch
+import yaml
 # local
 from employee_insights.models import *
+
+
+class EmployeeData(object):
+
+    def __init__(self, locations, job_titles, companies, employees):
+        self.locations = locations
+        self.job_titles = job_titles
+        self.companies = companies
+        self.employees = employees
+
+    def __repr__(self):
+        tmp = {
+            name: [dict(x) for x in value]
+            for name, value
+            in self.__dict__.items()
+        }
+        return yaml.dump(tmp)
+
+    def items(self):
+        return self.__dict__.items()
 
 
 non_empty_lists = partial(st.lists, min_size=1)
@@ -173,11 +195,7 @@ def employee_data(draw, min_employees=1, max_employees=MAX_EMPLOYEES,
                                   min_size=min_employees, max_size=max_employees)
     employees = draw(strategy)
 
-    _locals = locals()
-    return Bunch({
-        x: _locals[x]
-        for x in ('locations', 'job_titles', 'companies', 'employees')
-    })
+    return EmployeeData(locations, job_titles, companies, employees)
 
 
 @st.composite

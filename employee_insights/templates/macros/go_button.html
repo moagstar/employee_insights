@@ -1,0 +1,9 @@
+{% macro scripts(loadEndpoint) %}
+    <script>
+        $(document).ready(function () {
+            $('#go').click(function (){
+                loadResultTable();
+            });
+        });
+    </script>
+{% endmacro %}

@@ -22,7 +22,7 @@ def get_employees_percentage_by_location(session, continent, country, state, cit
              The following columns are available:
 
                 - company_name
-                - location_name
+                - location
                 - percentage
     """
     employees_per_company = get_employees_per_company(session).subquery()
@@ -57,5 +57,5 @@ def get_employees_percentage_by_location(session, continent, country, state, cit
                      employees_per_company.c.company_id == Company.company_id)
 .       filter      (where)
 .       group_by    (Employee.company_id, group_by)
-.       having      (percentage > min_percentage)
+.       having      (percentage > float(min_percentage))
     )

@@ -1,17 +1,39 @@
+{# Macros for generating the result table from a rest call #}
+
+
+{# Setup the styles for the result table #}
 {% macro styles() %}
 <link rel="stylesheet" href="static/vendor/dropzone/basic.css"/>
 <link rel="stylesheet" href="static/vendor/simple-data-grid/simple.datagrid.css"/>
 {% endmacro %}
 
-{% macro scripts() %}
+
+{# Setup the scripts for calling the rest endpoint to fill the result table #}
+{% macro scripts(loadEndpoint) %}
 <script src="static/vendor/simple-data-grid/simple.datagrid.js"></script>
 <script>
+    function loadResultTable() {
+
+        var $params = $('.param');
+        var params = {};
+
+        for(var i = 0; i < $params.length; i++) {
+            var $param = $($params[i]);
+            params[$param.attr('id')] = $param.val();
+        }
+
+        $.get('{{ loadEndpoint }}', params, function (data) {
+            $('#results').simple_datagrid('loadData', data);
+        });
+    }
     $(document).ready(function () {
         $('#results').simple_datagrid();
     });
 </script>
 {% endmacro %}
 
+
+{#  Place the result table in the dom #} }}
 {% macro table(fields) %}
     <div class="container-fluid">
         <table id="results" style="width:100%">

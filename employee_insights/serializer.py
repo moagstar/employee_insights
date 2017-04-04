@@ -65,6 +65,13 @@ class CsvSerializer(object):
                 date_of_birth=csv_record.date_of_birth)
             self._factory(Employee, csv_record, lambda x: x.record_id, **extra_fields)
 
+        self.session.query(Location).delete()
+        self.session.query(JobTitle).delete()
+        self.session.query(Company).delete()
+        self.session.query(Employee).delete()
+        self.session.flush()
+        self.session.commit()
+
         for cls_store in self.store.values():
             self.session.add_all(x for x, _ in cls_store.values())
         self.session.flush()

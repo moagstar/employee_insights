@@ -6,3 +6,4 @@ toolz
 pytest
 hypothesis
 pytz
+pyyaml

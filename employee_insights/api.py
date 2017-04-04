@@ -1,6 +1,7 @@
 # std
 from functools import partial
 from codecs import getreader
+from itertools import zip_longest
 # 3rd party
 from flask import jsonify, Blueprint, request, Response
 # local
@@ -31,36 +32,46 @@ def make_response(query, **fields):
 api = Blueprint('api', __name__)
 
 
-@api.route('/employees/percentage_older_than_average/<n_years>')
-def employees_percentage_older_than_average(n_years):
+@api.route('/employees/percentage_older_than_average')
+def employees_percentage_older_than_average():
     """
     """
+    n_years = request.args.get('n_years') or 0
+
     query = partial(get_employees_percentage_older_than_average, n_years=n_years)
     return make_response(
         query,
         company_name=str,
-        average_employee_age=float,
-        percentage_older=float,
+        average_employee_age=int,
+        percentage_older=int,
     )
 
 
-@api.route('/employees/percentage_by_location/<min_percentage>/<continent>/<country>/<state>/<city>')
-@api.route('/employees/percentage_by_location/<min_percentage>/<continent>/<country>/<state>')
-@api.route('/employees/percentage_by_location/<min_percentage>/<continent>/<country>')
-@api.route('/employees/percentage_by_location/<min_percentage>/<continent>')
-def employees_percentage_by_location(min_percentage, continent, country=None, state=None, city=None):
+@api.route('/employees/percentage_by_location')
+def employees_percentage_by_location():
     """
     :return:
     """
-    query = partial(get_employees_percentage_by_location, continent=continent,
-                    country=country, state=state, city=city,
-                    min_percentage=min_percentage)
-    return make_response(
-        query,
-        company_name=str,
-        location=str,
-        percentage=float,
-    )
+    min_percentage = request.args.get('min_percentage') or 0
+    location = request.args.get('location') or ''
+
+    if location:
+
+        location = (x for x, _ in zip_longest(location.split('/'), range(4)))
+        continent, country, state, city = location
+
+        query = partial(get_employees_percentage_by_location, continent=continent,
+                        country=country, state=state, city=city,
+                        min_percentage=min_percentage)
+
+        return make_response(
+            query,
+            company_name=str,
+            location=str,
+            percentage=int,
+        )
+
+    return Response('expected location parameter', 400)
 
 
 @api.route('/employees/percentage_per_job_title')
@@ -71,7 +82,7 @@ def employees_percentage_per_job_title():
         get_employees_percentage_per_job_title,
         company_name=str,
         job_title=str,
-        percentage=float,
+        percentage=lambda x: round(float(x), 2),
     )
 
 
@@ -99,4 +110,15 @@ def employees_get():
         first_name=str,
         last_name=str,
         company_name=str,
+    )
+
+
+@api.route('/locations')
+def locations_get():
+    return make_response(
+        get_locations,
+        continent=str,
+        country=str,
+        state=str,
+        city=str
     )

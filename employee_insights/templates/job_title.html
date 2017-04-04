@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% import 'forms/result_table.html' as result_table %}
+{% import 'macros/result_table.html' as result_table %}
 
 {% block styles %}
 {{super()}}
@@ -9,7 +9,10 @@
 
 {% block scripts %}
 {{super()}}
-{{ result_table.scripts() }}
+{{ result_table.scripts('/api/employees/percentage_per_job_title') }}
+    <script>
+    loadResultTable();
+    </script>
 {% endblock %}
 
 {% block navbar %}
@@ -17,5 +20,5 @@
 {% endblock %}
 
 {% block content %}
-    {{ result_table.table(["company", "average_employee_age", "percentage_older"]) }}
+    {{ result_table.table(["company_name", "job_title", "percentage"]) }}
 {% endblock %}

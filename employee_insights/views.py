@@ -3,11 +3,11 @@ import io
 import datetime
 from codecs import getwriter
 # 3rd party
-from flask import render_template, send_file
+from flask import render_template, send_file, Blueprint
 # local
 from employee_insights.serializer import CsvSerializer
 from employee_insights.database import session
-from flask import Blueprint
+from employee_insights.queries import get_locations
 
 
 views = Blueprint('views', __name__)
@@ -44,4 +44,5 @@ def job_title():
 
 @views.route('/location')
 def location():
-    return render_template('location.html')
+    return render_template('location.html',
+                           locations=(x[0] for x in get_locations(session)))
