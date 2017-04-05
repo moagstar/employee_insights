@@ -13,6 +13,12 @@ app = Flask(__name__)
 
 @app.route('/static/<path:path>')
 def serve_static(path):
+    """
+    Serve a static file, note this should only really be used in the
+    development server.
+
+    :param path: Path to the static file to serve.
+    """
     return send_from_directory('static', path)
 
 
@@ -28,6 +34,9 @@ nav = Nav()
 
 @nav.navigation()
 def mynavbar():
+    """
+    Create the navbar.
+    """
     return Navbar(
         'Employee Insights',
         View('Home', 'views.index'),

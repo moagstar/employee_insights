@@ -11,7 +11,7 @@ def get_company_statistics(session):
     :param session: SQLAlchemy session to use for generating the query.
 
     :return: Query object giving the percentage of all employees for a company
-             that are n_years older than the company-wide average. The following
+             that are years older than the company-wide average. The following
              columns are available:
 
                 - company_name
