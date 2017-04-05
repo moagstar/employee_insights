@@ -9,13 +9,22 @@ from sqlalchemy.orm import sessionmaker
 # local
 from employee_insights.models import Base
 from employee_insights.serializer import CsvSerializer
-from strategies import employee_databases
+from tests.strategies import employee_databases
 
 
 @settings(max_examples=50)
 @given(employee_databases(min_employees=0), st_dt.datetimes(min_year=datetime.date.today().year))
 def test_serializer(employee_database, timestamp):
+    """
+    Verify the serialize to and deserialize from csv.
 
+    To verify the serialization we generate a random database, export to csv, import the csv to a
+    second database. The second database is again exported to csv, if all went well the two csv
+    exports should be the same.
+
+    :param employee_database: The employee database containing test data.
+    :param timestamp: The timestamp to assume for calculating ages.
+    """
     employee_data, session = employee_database
 
     with io.StringIO() as dump:

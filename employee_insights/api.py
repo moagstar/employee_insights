@@ -57,12 +57,8 @@ def employees_percentage_by_location():
 
     if location:
 
-        location = (x for x, _ in zip_longest(location.split('/'), range(4)))
-        continent, country, state, city = location
-
-        query = partial(get_employees_percentage_by_location, continent=continent,
-                        country=country, state=state, city=city,
-                        min_percentage=min_percentage)
+        query = partial(get_employees_percentage_by_location,
+                        location=location, min_percentage=min_percentage)
 
         return make_response(
             query,

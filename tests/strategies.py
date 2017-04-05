@@ -250,3 +250,22 @@ def employee_databases(draw, url='sqlite:///:memory:',
     session.commit()
 
     return data, session
+
+
+@st.composite
+def employee_database_sessions(draw, *args, **kwargs):
+    """
+    Return a strategy that will generate test instances of the employee
+    database (only returning the session, ignoring the actual input data)
+
+    See ``employee_databases`` for supported parameters
+    :param draw: Callable for drawing examples from strategies.
+    :param url: SQLAlchemy url for connecting to the test database.
+
+    :return: Strategy that will generate employee data and a SQLAlchemy
+             database with employee schema created and data imported. The
+             strategy generates SQLAlchemy session with imported test data.
+    """
+    _, session = draw(employee_databases(*args, **kwargs))
+    return session
+

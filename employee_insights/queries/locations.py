@@ -11,13 +11,10 @@ def get_locations(session):
     :return: Query object giving the number of all employees for a company.
              The following columns are available:
 
-                - continent
-                - country
-                - state
-                - city
+                - location
     """
     return ( session
-.       query   (Location.continent)
+.       query   (Location.continent.label('location'))
 .       union   (session.query(Location.country_description))
 .       union   (session.query(Location.state_description))
 .       union   (session.query(Location.city_description))

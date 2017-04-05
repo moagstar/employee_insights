@@ -9,8 +9,8 @@ from neobunch import NeoBunch as Bunch
 from toolz.itertoolz import count
 # local
 from employee_insights.queries import get_employees_percentage_by_location
-from strategies import employee_databases
-from common import get_company_employees
+from tests.strategies import employee_databases
+from tests.common import get_company_employees
 
 
 today = datetime.date(2017, 4, 1)
@@ -83,6 +83,25 @@ def get_expected(employee_data, continent, country, state, city, min_percentage)
             yield company.company_id, location, percentage
 
 
+def get_test_location(draw, employee_data):
+
+    country, state, city = [None] * 3
+
+    continent = draw(st.sampled_from(employee_data.locations)).continent
+
+    if draw(st.booleans()):
+        country = draw(st.sampled_from(employee_data.locations)).country
+
+        if draw(st.booleans()):
+            state = draw(st.sampled_from(employee_data.locations)).state
+
+            if draw(st.booleans()):
+                city = draw(st.sampled_from(employee_data.locations)).city
+
+    location = '/'.join(x for x in (continent, country, state, city) if x)
+    return location, continent, country, state, city
+
+
 @settings(max_examples=50)
 @given(employee_databases(), st.data(), st.integers(min_value=0, max_value=100))
 def test_get_employees_percentage_by_location(employee_database, data, min_percentage):
@@ -102,26 +121,15 @@ def test_get_employees_percentage_by_location(employee_database, data, min_perce
     """
     employee_data, session = employee_database
 
-    country, state, city = [None] * 3
+    location, continent, country, state, city = get_test_location(data.draw, employee_data)
 
-    continent = data.draw(st.sampled_from(employee_data.locations)).continent
-    if data.draw(st.booleans()):
-        country = data.draw(st.sampled_from(employee_data.locations)).country
-        if data.draw(st.booleans()):
-            state = data.draw(st.sampled_from(employee_data.locations)).state
-            if data.draw(st.booleans()):
-                city = data.draw(st.sampled_from(employee_data.locations)).city
+    actual_result = get_employees_percentage_by_location(session, location, min_percentage)
+    actual_result = sorted(actual_result)
 
-    actual_result = sorted(get_employees_percentage_by_location(
-        session, continent, country, state, city, min_percentage))
-
-    expected_result = sorted(get_expected(
-        employee_data, continent, country, state, city, min_percentage))
+    expected_result = get_expected(employee_data, continent, country, state, city, min_percentage)
+    expected_result = sorted(expected_result)
 
     for actual, expected in itertools.zip_longest(actual_result, expected_result):
-
-        if not expected:
-            assert 0
 
         company_id, location, percentage = expected
 

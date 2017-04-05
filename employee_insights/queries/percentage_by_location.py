@@ -1,3 +1,5 @@
+# std
+from itertools import zip_longest
 # 3rd party
 from sqlalchemy import func, and_
 # local
@@ -5,17 +7,21 @@ from employee_insights.models import Employee, Location, Company
 from employee_insights.queries.employees_per_company import  get_employees_per_company
 
 
-def get_employees_percentage_by_location(session, continent, country, state, city, min_percentage):
+def get_employees_percentage_by_location(session, location, min_percentage):
     """
     Get the query for retrieving the percentage of employees of a company at a
     particular location, filtered by a minimum percentage of employees.
 
     :param session: SQLAlchemy session to use for generating the query.
-    :param continent:
-    :param country:
-    :param state:
-    :param city:
-    :param min_percentage:
+    :param location: The location to get employee percentage for. This is a / sepearated list of
+                     any of the following combinations:
+
+                      - continent/country/state/city
+                      - continent/country/state
+                      - continent/country
+                      - continent
+
+    :param min_percentage: The minimum percentage to filter the results by.
 
     :return: Query object giving the percentage of employees of a company at a
              particular location.
@@ -26,6 +32,9 @@ def get_employees_percentage_by_location(session, continent, country, state, cit
                 - percentage
     """
     employees_per_company = get_employees_per_company(session).subquery()
+
+    location = (x for x, _ in zip_longest(location.split('/'), range(4)))
+    continent, country, state, city = location
 
     if city is not None:
         group_by = Location.continent + '/' + Location.country + '/' + Location.state + '/' + Location.city

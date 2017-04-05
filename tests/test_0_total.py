@@ -5,8 +5,8 @@ import itertools
 from hypothesis import given, settings
 # local
 from employee_insights.queries import get_employees_per_company
-from strategies import employee_databases
-from common import get_company_employees
+from tests.strategies import employee_databases
+from tests.common import get_company_employees
 
 
 today = datetime.date(2017, 4, 1)
