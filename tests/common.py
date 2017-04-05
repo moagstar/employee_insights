@@ -6,7 +6,6 @@ from unittest.mock import patch
 from table2dicts import table2dicts
 from neobunch import NeoBunch as Bunch
 # local
-from employee_insights import database
 from tests.strategies import import_data
 
 

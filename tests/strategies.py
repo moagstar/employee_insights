@@ -2,7 +2,6 @@
 from functools import partial
 import datetime
 import os
-import io
 import csv
 # 3rd party
 from sqlalchemy import create_engine

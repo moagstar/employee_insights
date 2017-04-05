@@ -6,7 +6,6 @@ import capybara
 import capybara.dsl
 # local
 from employee_insights.app import app
-from employee_insights import database
 
 
 # setup capybara / selenium
