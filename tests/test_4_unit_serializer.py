@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 # local
 from employee_insights.models import Base
 from employee_insights.serializer import CsvSerializer
-from test_strategies import employee_databases
+from strategies import employee_databases
 
 
 @settings(max_examples=50)

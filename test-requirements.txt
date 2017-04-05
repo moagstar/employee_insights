@@ -7,3 +7,4 @@ pytest
 hypothesis
 pytz
 pyyaml
+capybara-py
