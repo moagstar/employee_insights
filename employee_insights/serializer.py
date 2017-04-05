@@ -12,7 +12,7 @@ from employee_insights.models import *
 
 
 def age_to_date_of_birth(age, timestamp):
-    days = age * 365.25
+    days = float(age) * 365.25
     delta = datetime.timedelta(days=datetime.timedelta(days).days)
     return (timestamp - delta).date()
 
@@ -93,7 +93,6 @@ class CsvSerializer(object):
         self.session.query(Employee).delete()
         self.session.flush()
         self.session.commit()
-        self.session.begin()
 
         for cls_store in self.store.values():
             self.session.add_all(x for x, _ in cls_store.values())

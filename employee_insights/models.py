@@ -24,10 +24,10 @@ class Location(Base):
     __table_args__ = {'sqlite_autoincrement': True}
 
     location_id = Column(Integer, primary_key=True, autoincrement=True)
-    continent = Column(String)
-    country = Column(String)
-    state = Column(String)
-    city = Column(String)
+    continent = Column(String, index=True)
+    country = Column(String, index=True)
+    state = Column(String, index=True)
+    city = Column(String, index=True)
     employees = relationship('Employee', back_populates='location')
 
     @hybrid_property
