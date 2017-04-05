@@ -22,6 +22,9 @@ from employee_insights.models import *
 
 
 class EmployeeData(object):
+    """
+    Class for holding the result of hypothesis data generation.
+    """
 
     def __init__(self, locations, job_titles, companies, employees):
         self.locations = locations
