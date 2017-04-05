@@ -79,11 +79,3 @@ class Employee(Base):
     @hybrid_property
     def age(self):
         return (func.julianday(NOW) - func.julianday(self.date_of_birth)) / 365.25
-
-
-class SqliteSequence(Base):
-
-    __tablename__ = 'sqlite_sequence'
-
-    name = Column(primary_key=True)
-    seq = Column()

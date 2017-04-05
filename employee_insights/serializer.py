@@ -91,7 +91,7 @@ class CsvSerializer(object):
         self.session.query(JobTitle).delete()
         self.session.query(Company).delete()
         self.session.query(Employee).delete()
-        self.session.query(SqliteSequence).delete()
+        self.session.execute('delete from sqlite_sequence')
 
         self.session.flush()
         self.session.commit()

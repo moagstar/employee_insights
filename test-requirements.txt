@@ -9,3 +9,4 @@ pytz
 pyyaml
 capybara-py
 table2dicts
+selenium
