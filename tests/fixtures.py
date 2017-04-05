@@ -16,18 +16,16 @@ os.environ["PATH"] = os.pathsep.join((bin_path, os.environ["PATH"]))
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
 
-@pytest.yield_fixture
+capybara.default_max_wait_time = 5
+
+
+@pytest.fixture
 def page():
     """
-    Create a capybara page for use in an integration test. The current database session is saved
-    on entry and restored on exit.
+    Create a capybara page for use in an integration test.
 
     :return: The capybara page.
     """
-    old_session = database.session
-    try:
+    if capybara.app != app:
         capybara.app = app
-        yield capybara.dsl.page
-    finally:
-        database.session = old_session
-        capybara.reset_sessions()
+    return capybara.dsl.page

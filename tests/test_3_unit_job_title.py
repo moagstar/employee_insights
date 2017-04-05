@@ -10,7 +10,14 @@ from employee_insights.queries import get_employees_percentage_per_job_title
 from tests.strategies import employee_databases
 from tests.common import get_company_employees
 
-today = datetime.date(2017, 4, 1)
+
+Expected = collections.namedtuple('Expected', [
+    'company_id',
+    'company_name',
+    'job_title_id',
+    'job_title',
+    'percentage',
+])
 
 
 def get_expected(employee_data):
@@ -20,8 +27,7 @@ def get_expected(employee_data):
 
     :param employee_data: Hypothesis generated employee database source data.
 
-    :return: Generator which when iterated yields a tuple of
-             (company_id, count, percentage)
+    :return: Generator which when iterated yields an instance of ``Expected``
              which represents the expected result from
              get_employees_percentage_per_job_title.
     """
@@ -29,7 +35,9 @@ def get_expected(employee_data):
         counter = collections.Counter(x.job_title_id for x in company_employees)
         for job_title_id, count in counter.items():
             percentage = float(count) / len(company_employees) * 100
-            yield company.company_id, job_title_id, percentage
+            job_title = employee_data.job_titles[job_title_id - 1].job_title
+            yield Expected(company.company_id, company.company_name,
+                           job_title_id, job_title, percentage)
 
 
 @settings(max_examples=50)
@@ -52,7 +60,7 @@ def test_get_employees_percentage_per_job_title(employee_database):
 
     for actual, expected in itertools.zip_longest(actual_result, expected_result):
 
-        company_id, job_title_id, percentage = expected
+        company_id, company_name, job_title_id, job_title, percentage = expected
 
         assert actual.company_id == company_id
         assert actual.job_title_id == job_title_id

@@ -198,6 +198,38 @@ def employee_data(draw, min_employees=1, max_employees=MAX_EMPLOYEES,
     return EmployeeData(locations, job_titles, companies, employees)
 
 
+def import_data(data, session):
+    """
+    Import employee data into the database using the given session object.
+
+    :param data: Employee data to import, see ``employee_data``
+    :param session: SQLAlchemy session object
+    """
+    items = []
+
+    for table_name, table_data in data.items():
+
+        table_name_singular = inflect.singular_noun(table_name)
+        table_name_pascal = stringcase.pascalcase(table_name_singular)
+
+        factory = globals()[table_name_pascal]
+        items += [
+            # construct an instance of the Model, ignoring id columns since
+            # these are auto incremented in the database.
+            factory(**{
+                name: value
+                for name, value in construct_args.items()
+                # don't add primary key
+                if name != table_name_singular + '_id'
+            })
+            for construct_args in table_data
+        ]
+
+    session.add_all(items)
+    session.flush()
+    session.commit()
+
+
 @st.composite
 def employee_databases(draw, url='sqlite:///:memory:',
                        min_employees=1, max_employees=MAX_EMPLOYEES,
@@ -225,47 +257,6 @@ def employee_databases(draw, url='sqlite:///:memory:',
                               min_job_titles, max_job_titles,
                               min_locations, max_locations))
 
-    items = []
-
-    for table_name, table_data in data.items():
-
-        table_name_singular = inflect.singular_noun(table_name)
-        table_name_pascal = stringcase.pascalcase(table_name_singular)
-
-        factory = globals()[table_name_pascal]
-        items += [
-            # construct an instance of the Model, ignoring id columns since
-            # these are auto incremented in the database.
-            factory(**{
-                name: value
-                for name, value in construct_args.items()
-                # don't add primary key
-                if name != table_name_singular + '_id'
-            })
-            for construct_args in table_data
-        ]
-
-    session.add_all(items)
-    session.flush()
-    session.commit()
+    import_data(data, session)
 
     return data, session
-
-
-@st.composite
-def employee_database_sessions(draw, *args, **kwargs):
-    """
-    Return a strategy that will generate test instances of the employee
-    database (only returning the session, ignoring the actual input data)
-
-    See ``employee_databases`` for supported parameters
-    :param draw: Callable for drawing examples from strategies.
-    :param url: SQLAlchemy url for connecting to the test database.
-
-    :return: Strategy that will generate employee data and a SQLAlchemy
-             database with employee schema created and data imported. The
-             strategy generates SQLAlchemy session with imported test data.
-    """
-    _, session = draw(employee_databases(*args, **kwargs))
-    return session
-

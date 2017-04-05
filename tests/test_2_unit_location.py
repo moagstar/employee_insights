@@ -1,6 +1,7 @@
 # std
 import datetime
 import itertools
+import collections
 from functools import partial
 # 3rd party
 import pytest
@@ -13,30 +14,42 @@ from tests.strategies import employee_databases
 from tests.common import get_company_employees
 
 
-today = datetime.date(2017, 4, 1)
+Expected = collections.namedtuple('Expected', [
+    'company_id',
+    'company_name',
+    'location',
+    'percentage',
+])
 
 
-def get_expected(employee_data, continent, country, state, city, min_percentage):
+def get_expected(employee_data, location, min_percentage):
     """
     Calculate the percentage of employees of a company at a particular location,
     filtered by a minimum percentage of employees using python.
 
     :param employee_data: Hypothesis generated employee database source data.
-    :param continent: Get percentage of employees in this continent.
-    :param country: Get percentage of employees in this country.
-    :param state: Get percentage of employees in this state.
-    :param city: Get percentage of employees in this city.
+    :param location: The location to get employee percentage for. This is a / separated list of
+                     any of the following combinations:
+
+                      - continent/country/state/city
+                      - continent/country/state
+                      - continent/country
+                      - continent
+
     :param min_percentage: The minimum percentage of employees a location should
                            have to be included in the output.
 
-    :return: Generator which when iterated yields a tuple of
-             (company_id, location, percentage)
-             which represents the expected result from
-             get_employees_percentage_by_location.
+    :return: Generator which when iterated yields an instance ``Expected`` which represents the
+             expected result from get_employees_percentage_by_location.
     """
-    params = Bunch(continent=continent, country=country, state=state, city=city)
-
     location_fields = ['city', 'state', 'country', 'continent']
+
+    continent, country, state, city = (
+        x for x, y in
+        itertools.zip_longest(location.split('/'), location_fields)
+    )
+
+    params = Bunch(continent=continent, country=country, state=state, city=city)
 
     def get_location(employee):
         return employee_data.locations[employee.location_id - 1]
@@ -80,7 +93,7 @@ def get_expected(employee_data, continent, country, state, city, min_percentage)
         percentage = n_employees_in_location / n_employees * 100
 
         if 0 < percentage > min_percentage:
-            yield company.company_id, location, percentage
+            yield Expected(company.company_id, company.company_name, location, percentage)
 
 
 def get_test_location(draw, employee_data):
@@ -99,7 +112,7 @@ def get_test_location(draw, employee_data):
                 city = draw(st.sampled_from(employee_data.locations)).city
 
     location = '/'.join(x for x in (continent, country, state, city) if x)
-    return location, continent, country, state, city
+    return location
 
 
 @settings(max_examples=50)
@@ -121,17 +134,17 @@ def test_get_employees_percentage_by_location(employee_database, data, min_perce
     """
     employee_data, session = employee_database
 
-    location, continent, country, state, city = get_test_location(data.draw, employee_data)
+    location = get_test_location(data.draw, employee_data)
 
     actual_result = get_employees_percentage_by_location(session, location, min_percentage)
     actual_result = sorted(actual_result)
 
-    expected_result = get_expected(employee_data, continent, country, state, city, min_percentage)
+    expected_result = get_expected(employee_data, location, min_percentage)
     expected_result = sorted(expected_result)
 
     for actual, expected in itertools.zip_longest(actual_result, expected_result):
 
-        company_id, location, percentage = expected
+        company_id, company_name, location, percentage = expected
 
         assert actual.company_id == company_id
         assert actual.location == location
