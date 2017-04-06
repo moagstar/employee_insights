@@ -41,13 +41,14 @@ def get_employees_percentage_older_than_average(session, years):
     """
     company_statistics = get_company_statistics(session).subquery()
     is_older = get_is_older_case(company_statistics, years)
-    label = 'percentage_older'
+    percentage_older = (func.sum(is_older) / func.count() * 100)
+
     return (session
 .       query       (
                      Company.company_id,
                      Company.company_name,
                      company_statistics.c.average_employee_age,
-                     (func.sum(is_older) / func.count() * 100).label(label),
+                     percentage_older.label('percentage_older'),
                     )
 .       join        (Employee.company)
 .       join        (company_statistics)
