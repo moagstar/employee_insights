@@ -1,23 +1,26 @@
 {% extends "bootstrap/base.html" %}
 
+
 {% import 'macros/result_table.html' as result_table %}
+
 
 {% block styles %}
 {{super()}}
 {{ result_table.styles() }}
 {% endblock %}
 
+
 {% block scripts %}
 {{super()}}
 {{ result_table.scripts('/api/employees/percentage_per_job_title') }}
-    <script>
-    loadResultTable();
-    </script>
+<script src="static/js/job_title.js"></script>
 {% endblock %}
+
 
 {% block navbar %}
     {{nav.mynavbar.render()}}
 {% endblock %}
+
 
 {% block content %}
     {{ result_table.table(["company_name", "job_title", "percentage"]) }}

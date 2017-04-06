@@ -1,12 +1,15 @@
 {% extends "bootstrap/base.html" %}
 
+
 {% import 'macros/result_table.html' as result_table %}
 {% import 'macros/go_button.html' as go_button %}
+
 
 {% block styles %}
 {{ super() }}
 {{ result_table.styles() }}
 {% endblock %}
+
 
 {% block scripts %}
 {{super()}}
@@ -14,9 +17,11 @@
 {{ go_button.scripts() }}
 {% endblock %}
 
+
 {% block navbar %}
     {{ nav.mynavbar.render() }}
 {% endblock %}
+
 
 {% block content %}
     <div class="col-lg-2">
@@ -29,5 +34,4 @@
         </div>
     </div>
     {{ result_table.table(["company_name", "average_employee_age", "percentage_older"]) }}
-
 {% endblock %}

@@ -14,12 +14,7 @@
 {{super()}}
 <script src="static/vendor/dropzone/dropzone.min.js"></script>
 {{ result_table.scripts('/api/employees') }}
-<script>
-    $(document).ready(function () {
-        loadResultTable();
-        Dropzone.options.importEmployeesCsv = { success: loadResultTable };
-    });
-</script>
+<script src="static/js/import.js"></script>
 {% endblock %}
 
 
@@ -30,7 +25,6 @@
     <form action="/api/employees"
           class="dropzone"
           id="import-employees-csv"></form>
-
     {{
         result_table.table([
             "employee_id",
